@@ -27,6 +27,9 @@ const model = new ChatGoogleGenerativeAI({
 // --------------------------
 const outputParser = new StringOutputParser();
 
+// --------------------------
+// Section: Generate MySQL Queries Process
+// --------------------------
 const schema = `
   CREATE TABLE dbo.Student(
     student_id varchar(10) primary key,
@@ -38,26 +41,34 @@ const schema = `
 `;
 
 const prompt = ChatPromptTemplate.fromTemplate(`
-  Given the database schema: {schema}.
-  Generate a SQL SELECT query for the following user input: {user_input}.
-  Select only these column: {column}.
+  You are a MySQL expert.
 
-  Do not use '*' when using generating SELECT.
-  Only displays 3 properties in the schema. The schema's primary key(s) must always be used in SELECT query.
-  If there are tables need to be joined, always use 'JOIN' to join tables.
-  Always use 'LIMIT' to limit the out to 50 rows.
+  Your goal is to generate syntax correct MySQL "SELECT" queries based on the given MySQL schemas.
+  You need to follow these rules and guidelines. No yapping.
+
+  Rules and Guidelines:
+  - DO:
+    -- Displays from minumum 3 to maximum 5 properties in the "SELECT" queries. 
+    -- The schema's primary key(s) must always be used in "SELECT" queries.
+    -- If there are tables need to be joined, always use 'JOIN' to join tables.
+    -- Always use 'LIMIT' to limit the out to 20 rows.
+  - DO NOT:
+    -- Use '*' when generating "SELECT" queries.
+
+  Given the MySQL database schema: {schema}.
+  Generate MySQL "SELECT" query based on the following user input: {user_input}.
+  Display the following column(s): {column}.
   `);
-
+/* Create (Base) Chain */
 const chain = prompt.pipe(model).pipe(outputParser);
+
 const response = await chain.invoke({
   schema: schema,
   user_input: "Find students who have age above 10",
   column: "student_id, first_name, last_name, age",
 });
 
-// Run:
 try {
-  // const response = await callZodOutputParser();
   console.log(response);
 } catch (error) {
   console.error(error.message);
@@ -66,4 +77,7 @@ try {
 // --------------------------
 // Section: Synopsis
 // --------------------------
-// dùng video cảu ông kia để lấy data từ trong đặc tả user input, sau đó mới bắt đầu xử lý, keyword: extract information from
+/* 
+  - dùng video cảu ông kia để lấy data từ trong đặc tả user input, sau đó mới bắt đầu xử lý, keyword: extract information from
+  - There is a function in Langchain for SQL but it has a default prompt already.
+*/
