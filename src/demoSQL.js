@@ -78,6 +78,7 @@ try {
 // Section: Synopsis
 // --------------------------
 /* 
-  - dùng video cảu ông kia để lấy data từ trong đặc tả user input, sau đó mới bắt đầu xử lý, keyword: extract information from
+  - combine with the tutorial video to get data from the user input specifications -> devide and process the input,
+  they keyword here is "extract the information"
   - There is a function in Langchain for SQL but it has a default prompt already.
 */
